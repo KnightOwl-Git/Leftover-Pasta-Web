@@ -1,4 +1,8 @@
-import { Chuck, HID} from 'webchuck'
+import { Chuck, HID } from 'webchuck'
+import { buttPress } from './main.ts'
+import { reset } from './main.ts'
+import { changeActive } from './main.ts'
+import { startPlayhead } from './main.ts'
 
 document.getElementById('action')!.addEventListener('click', async () => {
     //hide button
@@ -13,13 +17,34 @@ document.getElementById('action')!.addEventListener('click', async () => {
     const hid = await HID.init(theChuck); // Initialize HID with mouse and keyboard
 
     console.log(hid); //this is literally just so typescript doesn't get mad at me smh
-    
+
     //load chuck file
     await theChuck.loadFile("/chuck/main.ck");
 
-    
 
+    await theChuck.runFile("main.ck");
     console.log("done loading");
+    theChuck.startListeningForEvent("uiSyllable", uiChange);
+    theChuck.startListeningForEvent("reset", reset);
+    theChuck.startListeningForEvent("changeActive", advance);
+    theChuck.startListeningForEvent("startPlayhead", startPlayhead);
 
-    theChuck.runFile("main.ck");
+
+    async function uiChange() {
+        const currentSyll = await theChuck.getInt("syllBroadcast");
+        const perf = await theChuck.getInt("perfectRN");
+        console.log("syllbroadcast: " + currentSyll);
+        buttPress(currentSyll,perf);
+
+    }
+    async function advance() {
+        const currentSyll = await theChuck.getInt("syllableRN");
+        changeActive(currentSyll);
+
+    }
+
+
+
 });
+
+

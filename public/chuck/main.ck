@@ -1,11 +1,21 @@
 // main.ck
 
-SndBuf toni => dac;
-SndBuf player => dac;
+//events for triggering UI stuff
+global Event uiSyllable;
+
+global Event startPlayhead;
+global Event changeActive;
+global Event reset;
 
 //global variable trackers
 false => global int perfectRN;
 0 => global int syllableRN;
+0 => global int syllBroadcast;
+
+SndBuf toni => dac;
+SndBuf player => dac;
+
+
 
 //set bar length
 1::second => dur bar;
@@ -14,7 +24,7 @@ bar/2 => dur quarterNote;
 
 
 //amount of time per beat
-bar/8 => dur beat;
+bar/6 => dur beat;
 
 quarterNote/3 => dur triplet;
 
@@ -25,16 +35,28 @@ int say;
 //current real item
 int real;
 
+//declare random variables for later
+Math.random2(0,5) => int mRand;
+Math.random2(0,3) => int iRand; 
+
 
 
 
 //amount of time for perfect button presses
-40::ms => dur perfect;
+20::ms => dur perfect;
+
+//account for input delay
+29::ms => dur delay;
 
 if (perfect > beat) {
     //making sure the perfect zone can't be longer than the beats
     beat >= perfect;
 }
+
+
+
+
+//=============== MOUSE AND KEYBOARD INPUT ================
 
 //set up keyboard input
 0 => int device;
@@ -44,6 +66,11 @@ HidMsg msg;
 // open keyboard device - code from webchuck IDE
 if (!hid.openKeyboard(device)) me.exit();
 <<< "keyboard " + hid.name() + "ready", "" >>>;
+
+//open mouse
+if( !hid.openMouse( device ) ) me.exit();
+<<< "mouse '" + hid.name() + "' ready", "" >>>;
+
 
 
 //function for keeping track of mouse+keyboard - code from webChuck IDE
@@ -58,26 +85,30 @@ fun void inputListen() {
         false => int buttonPress;
 
         while (hid.recv(msg)) {
-            if (msg.isButtonDown()) {
-                if(!buttonPress) {
-                    //only execute once per button press
+            if (msg.isButtonDown() || msg.isButtonDown()) {
+                if(buttonPress == false) {
+                    //*************** ON BUTTON PRESS **************
                     <<< "key", msg.key, "(ascii)",  msg.which >>>;
+                    syllableRN => syllBroadcast;
 
                     //play sound
-                    
+                    "p_" + real + "_" + iRand + "_" + (syllBroadcast) + ".wav" => player.read;
+                    0 => player.pos;
+
                     //fire message to javascript
+                    uiSyllable.broadcast();
+
                     
 
-                    //increment syllableRN
                     syllableRN++;
+                    <<<"syllableRN: " + syllableRN>>>;
+                    changeActive.broadcast();
                     true => buttonPress;
                 }
               
             } else {
                 //button up
                 false => buttonPress;
-                <<<"buttonUp">>>;
-
                 
             }
         }
@@ -85,7 +116,7 @@ fun void inputListen() {
     
 }
 
-//function for keeping track of game logic
+//====================== GAME LOGIC ================================
 
 fun void logic() { 
     
@@ -93,32 +124,41 @@ fun void logic() {
     //increment time until the playhead starts moving
     0.75::bar => now;
 
+    //adjustable delay
+    1::delay => now;
+
+    startPlayhead.broadcast();
+
     //amount of time on either side of the perfect section: half a beat minus half the perfect length
     (beat/2 - perfect/2) => dur notPerfect;
 
     //set global syllableRN to 0
     0 => syllableRN;
 
+    //reset UI
+    
+
     //temporary current syllable counter
     0 => int currentSyllable;
     <<<"syllable: 0">>>;
 
-    //repeat 8 times for the 8 beats
-    for (0 => int i; i < 8; i++) {
+    //repeat 7 times for the 7 beats
+    for (0 => int i; i < 7; i++) {
 
         //increment temporary syllable counter
         currentSyllable++;
+
         
         //play notPerfect duration
         notPerfect => now;
         //report perfect
         true => perfectRN;
-        <<<"perfect zone!">>>;
+        <<<"perf zone enter">>>;
         //play the perfect length
         perfect => now;
         //report not perfect
         false => perfectRN;
-        <<<"sad zone :(">>>;
+        <<<"perf zone exit">>>;
         //play the rest of the beat, same length as before
         notPerfect => now;
 
@@ -126,10 +166,12 @@ fun void logic() {
 
         if (currentSyllable > syllableRN) {
             syllableRN++;
-            <<<"syllable: " + syllableRN >>>;
+            <<<"syllableRN: " + syllableRN>>>;
+            changeActive.broadcast();
         }
 
     }
+    
   
 }
 
@@ -145,9 +187,9 @@ while (1)  {
     for (0 => int i; i < 12; i++) {
         
         //declare mainvariation randomness
-        Math.random2(0,5) => int mRand;
+        Math.random2(0,5) => mRand;
         //declare item randomness
-        Math.random2(0,3) => int iRand; 
+        Math.random2(0,3) => iRand; 
         
         
         //Deliver line
@@ -155,25 +197,32 @@ while (1)  {
         if (!yourTurn) {
             //Toni's turn!
 
+            //reset UI
+            reset.broadcast();
+
             //reroll randomness
             
-            Math.random2(0,5) => int mRand;
-            Math.random2(0,3) => int iRand; 
+            Math.random2(0,5) => mRand;
+            Math.random2(0,3) => iRand; 
 
             
-            //decide item to say - temp if statement
-            Math.random2(0, 1) => say;
+            //decide item to say
+            Math.random2(0, 2) => say;
             if (say == 0) { 
                 61 => say;
-            } else {
+            } else if (say == 1){
                 63 => say;
+            } else {
+                29 => say;
             }
             //decide real item - temp if statement
-            Math.random2(0, 1) => real;
+            Math.random2(0, 2) => real;
             if (real == 0) {
                 61 => real;
-            } else {
+            } else if (real == 1){
                 63 => real;
+            } else {
+                29 => real;
             }
             if (i == 0) {
                 "t_i_" + mRand + ".wav" => toni.read;
