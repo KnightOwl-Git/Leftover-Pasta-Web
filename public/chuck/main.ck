@@ -46,7 +46,7 @@ Math.random2(0,3) => int iRand;
 20::ms => dur perfect;
 
 //account for input delay
-29::ms => dur delay;
+5::ms => dur delay;
 
 if (perfect > beat) {
     //making sure the perfect zone can't be longer than the beats
