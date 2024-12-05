@@ -250,6 +250,7 @@ while (1)  {
         Math.random2(0,5) => mRand;
         //declare item randomness
         Math.random2(0,3) => iRand;
+        checkBPM.broadcast();
         
         
         //Deliver line
@@ -263,7 +264,7 @@ while (1)  {
                 //increment round
                 rounds++;
 
-                checkBPM.broadcast();
+                
                 //reroll randomness
                 
                 Math.random2(0,5) => mRand;
@@ -314,18 +315,18 @@ while (1)  {
 
 
                 } else if (rounds == 19) {
-                    20 => beatsPM;
+                    140 => beatsPM;
                     tempo.tempo(beatsPM, 4, 4);
 
                 } else if (rounds == 20) {
-                    90 => beatsPM;
+                    160 => beatsPM;
                     tempo.tempo(beatsPM, 4, 4);
                     //then 4 rounds of all inst, then 4 rounds of octave
                 } else if (rounds == 29) {
-                    140 => beatsPM;
+                    180 => beatsPM;
                     tempo.tempo(beatsPM, 4, 4);
                 } else if (rounds == 30) {
-                    180 => beatsPM;
+                    220 => beatsPM;
                 } else if (rounds == 31) {
                     theEnd.broadcast();
                     break; // end the song
