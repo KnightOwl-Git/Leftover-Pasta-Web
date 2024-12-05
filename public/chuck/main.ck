@@ -326,7 +326,7 @@ while (1)  {
                     tempo.tempo(beatsPM, 4, 4);
                 } else if (rounds == 30) {
                     180 => beatsPM;
-                } else if (rounds == 39) {
+                } else if (rounds == 31) {
                     theEnd.broadcast();
                     break; // end the song
 
