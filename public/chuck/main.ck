@@ -6,6 +6,10 @@ global Event uiSyllable;
 global Event startPlayhead;
 global Event changeActive;
 global Event reset;
+global Event talk;
+global Event sad;
+global Event hold;
+global Event toniReset;
 
 //global variable trackers
 false => global int perfectRN;
@@ -31,9 +35,9 @@ quarterNote/3 => dur triplet;
 false => int yourTurn;
 
 //current said item
-int say;
+global int say;
 //current real item
-int real;
+global int real;
 
 //declare random variables for later
 Math.random2(0,5) => int mRand;
@@ -196,11 +200,9 @@ while (1)  {
         
         if (!yourTurn) {
             //Toni's turn!
-
-            //reset UI
-            reset.broadcast();
-
-            //reroll randomness
+            
+            if (i == 0) {
+                //reroll randomness
             
             Math.random2(0,5) => mRand;
             Math.random2(0,3) => iRand; 
@@ -224,14 +226,24 @@ while (1)  {
             } else {
                 29 => real;
             }
-            if (i == 0) {
+                talk.broadcast();
+                reset.broadcast();
+                toniReset.broadcast();
                 "t_i_" + mRand + ".wav" => toni.read;
                 0 => toni.pos;
+                
+                
             } else if (i == 3) {
+                talk.broadcast();
                 "t_have_" + mRand + ".wav" => toni.read;
                 0 => toni.pos;
             } else if (i == 6) {
+                talk.broadcast();
+                //tell the UI to have Toni hold up the thing
+                hold.broadcast();
                 "t_" + say + "_" + iRand + ".wav" => toni.read;
+            } else if (i == 9) {
+                talk.broadcast();
             }
             
         } else {

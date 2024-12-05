@@ -1,5 +1,5 @@
 import { Chuck, HID } from 'webchuck'
-import { buttPress } from './main.ts'
+import { buttPress, holdItem, sad, talk, toniReset } from './main.ts'
 import { reset } from './main.ts'
 import { changeActive } from './main.ts'
 import { startPlayhead } from './main.ts'
@@ -21,6 +21,15 @@ document.getElementById('action')!.addEventListener('click', async () => {
     //load chuck file
     await theChuck.loadFile("/chuck/main.ck");
 
+    //load samples from class
+    await theChuck.loadFile("/chuck/audio/clap_01.wav");
+    await theChuck.loadFile("/chuck/audio/click_01.wav");
+    await theChuck.loadFile("/chuck/audio/click_02.wav");
+    await theChuck.loadFile("/chuck/audio/click_03.wav");
+    await theChuck.loadFile("/chuck/audio/click_04.wav");
+    await theChuck.loadFile("/chuck/audio/click_05.wav");
+
+
 
     await theChuck.runFile("main.ck");
     console.log("done loading");
@@ -28,6 +37,10 @@ document.getElementById('action')!.addEventListener('click', async () => {
     theChuck.startListeningForEvent("reset", reset);
     theChuck.startListeningForEvent("changeActive", advance);
     theChuck.startListeningForEvent("startPlayhead", startPlayhead);
+    theChuck.startListeningForEvent("talk", talk);
+    theChuck.startListeningForEvent("sad", sad);
+    theChuck.startListeningForEvent("hold", holdThing);
+    theChuck.startListeningForEvent("toniReset", toniReset);
 
 
     async function uiChange() {
@@ -40,6 +53,13 @@ document.getElementById('action')!.addEventListener('click', async () => {
     async function advance() {
         const currentSyll = await theChuck.getInt("syllableRN");
         changeActive(currentSyll);
+
+    }
+
+    async function holdThing() {
+        const itemHold = await theChuck.getInt("real");
+        
+        holdItem(itemHold);
 
     }
 

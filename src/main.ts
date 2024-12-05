@@ -8,7 +8,7 @@ const riveCanvas = document.getElementById('rive-canvas') as HTMLCanvasElement;
 
 const r = new Rive({
 
-  src: "/rive/LP_UI_JS.riv",
+  src: "/rive/LP_UI_JS_final.riv",
   canvas: riveCanvas,
   layout: new Layout({
     fit: Fit.Layout,
@@ -67,6 +67,33 @@ export function changeActive(syll: number) {
 export function startPlayhead() {
   r.fireStateAtPath("AutoStart", "Full Timeline Widget");
 
+
+}
+
+export function talk() {
+  r.fireStateAtPath("Talk", "Toni 2");
+
+}
+
+export function holdItem(itemno: number) {
+
+  r.setNumberStateAtPath("ItemNo", itemno, "Toni 2/Items")
+  r.fireStateAtPath("Hold Item", "Toni 2");
+
+}
+
+export function toniReset() {
+  r.fireStateAtPath("Reset", "Toni 2");
+
+}
+
+export function sad() {
+  r.setBooleanStateAtPath("Sad", true, "Toni2");
+
+}
+
+export function happy() {
+  r.setBooleanStateAtPath("Sad", false, "Toni2");
 
 }
 
