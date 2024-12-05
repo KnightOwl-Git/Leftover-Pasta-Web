@@ -1,5 +1,5 @@
 import { Chuck, HID } from 'webchuck'
-import { buttPress, holdItem, sad, talk, toniReset } from './main.ts'
+import { buttPress, holdItem, sad, setBPM, talk, toniReset } from './main.ts'
 import { reset } from './main.ts'
 import { changeActive } from './main.ts'
 import { startPlayhead } from './main.ts'
@@ -16,11 +16,20 @@ document.getElementById('action')!.addEventListener('click', async () => {
 
     const hid = await HID.init(theChuck); // Initialize HID with mouse and keyboard
 
-    console.log(hid); //this is literally just so typescript doesn't get mad at me smh
+    console.log(hid); //this is literally just so typescript doesn't get mad at me because it doesn't know that chuck is using it :P
 
-    //load chuck file
+    //load chuck files
     await theChuck.loadFile("/chuck/main.ck");
-
+    await theChuck.loadFile("/chuck/initialize.ck");
+    await theChuck.loadFile("/chuck/kick.ck");
+    await theChuck.loadFile("/chuck/score.ck");
+    await theChuck.loadFile("/chuck/BPM.ck");
+    await theChuck.loadFile("/chuck/piano.ck");
+    await theChuck.loadFile("/chuck/bass.ck");
+    await theChuck.loadFile("/chuck/drums.ck");
+    await theChuck.loadFile("/chuck/flute.ck");
+    await theChuck.loadFile("/chuck/fluteOctave.ck");
+    
     //load samples from class
     await theChuck.loadFile("/chuck/audio/clap_01.wav");
     await theChuck.loadFile("/chuck/audio/click_01.wav");
@@ -28,6 +37,21 @@ document.getElementById('action')!.addEventListener('click', async () => {
     await theChuck.loadFile("/chuck/audio/click_03.wav");
     await theChuck.loadFile("/chuck/audio/click_04.wav");
     await theChuck.loadFile("/chuck/audio/click_05.wav");
+    await theChuck.loadFile("/chuck/audio/cowbell_01.wav");
+    await theChuck.loadFile("/chuck/audio/hihat_01.wav");
+    await theChuck.loadFile("/chuck/audio/hihat_02.wav");
+    await theChuck.loadFile("/chuck/audio/hihat_03.wav");
+    await theChuck.loadFile("/chuck/audio/hihat_04.wav");
+    await theChuck.loadFile("/chuck/audio/kick_01.wav");
+    await theChuck.loadFile("/chuck/audio/kick_03.wav");
+    await theChuck.loadFile("/chuck/audio/kick_04.wav");
+    await theChuck.loadFile("/chuck/audio/kick_05.wav");
+    await theChuck.loadFile("/chuck/audio/snare_03.wav");
+    await theChuck.loadFile("/chuck/audio/stereo_fx_01.wav");
+    await theChuck.loadFile("/chuck/audio/stereo_fx_02.wav");
+    await theChuck.loadFile("/chuck/audio/stereo_fx_03.wav");
+    await theChuck.loadFile("/chuck/audio/stereo_fx_04.wav");
+    await theChuck.loadFile("/chuck/audio/stereo_fx_05.wav");
 
 
 
@@ -41,6 +65,14 @@ document.getElementById('action')!.addEventListener('click', async () => {
     theChuck.startListeningForEvent("sad", sad);
     theChuck.startListeningForEvent("hold", holdThing);
     theChuck.startListeningForEvent("toniReset", toniReset);
+    theChuck.startListeningForEvent("checkBPM", setberp);
+    theChuck.startListeningForEvent("theEnd", stopit);
+
+    async function stopit() {
+        document.getElementById("theEnd")!.style.display = "flex";
+        
+    }
+
 
 
     async function uiChange() {
@@ -60,6 +92,11 @@ document.getElementById('action')!.addEventListener('click', async () => {
         const itemHold = await theChuck.getInt("real");
         
         holdItem(itemHold);
+
+    }
+    async function setberp() {
+        const currentBPM = await theChuck.getInt("beatsPM");
+        setBPM(currentBPM);
 
     }
 

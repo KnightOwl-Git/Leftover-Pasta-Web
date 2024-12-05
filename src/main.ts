@@ -8,7 +8,7 @@ const riveCanvas = document.getElementById('rive-canvas') as HTMLCanvasElement;
 
 const r = new Rive({
 
-  src: "/rive/LP_UI_JS_final.riv",
+  src: "/rive/LP_UI_JS_finalBPM.riv",
   canvas: riveCanvas,
   layout: new Layout({
     fit: Fit.Layout,
@@ -94,6 +94,12 @@ export function sad() {
 
 export function happy() {
   r.setBooleanStateAtPath("Sad", false, "Toni2");
+
+}
+
+export function setBPM(berp: number) {
+  console.log("BERP!" + berp)
+  r.setNumberStateAtPath("AutoBPM", berp, "Full Timeline Widget");
 
 }
 

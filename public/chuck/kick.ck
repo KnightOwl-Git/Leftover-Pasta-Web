@@ -3,19 +3,20 @@
 // sound chain
 
 SndBuf kick => dac;
-SinOsc sin => dac;
-0 => sin.gain;
+
+0.2 => kick.gain;
 
 
-me.dir(-1) + "audio/kick_04.wav" => kick.read;
+"kick_04.wav" => kick.read;
 
 // create BPM objcet
-
+///
 BPM tempo;
+tempo.quarterNote => dur quarter;
+
 
 while(true)
 {
-    tempo.quarterNote => dur quarter;
     
     // play a loop
     for( 0 => int beat; beat < 4; beat++)

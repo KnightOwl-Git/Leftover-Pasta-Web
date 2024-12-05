@@ -1,10 +1,9 @@
 //initialize.ck
+//NOT USING THIS ANYMORE
 
 SinOsc osc => dac; 
-0.1 => osc.gain;
+0.2 => osc.gain;
 SndBuf hey => dac;
-
-me.dir() + "voice/toni/have/3.wav" => hey.read;
 
 1::second => now;
 
